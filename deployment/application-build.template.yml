@@ -1,0 +1,79 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Application update template
+Parameters:
+  EnvironmentParameter:
+    Type: string
+    Default: dev
+    Description: Environment name.
+Resources:
+  CodeBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      AccessControl: Private
+      BucketName:
+        Fn::Join:
+          - "."
+          - - workshop-2018
+            - !Ref EnvironmentParameter
+            - code
+  LambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName:
+        Fn::Join:
+          - ""
+          - - !Ref WorkshopLambdaRole
+              !Ref AWS::Region
+      Policies:
+        - PolicyName: LambdaWriteLogs
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement: 
+              - Effect: Allow
+                Action:
+                  - logs:PutLogEvents
+                Resource: arn:aws:logs:*:*:*
+        - PolicyName: S3ReadWrite
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                Resource: arn:aws:s3:::*/*
+  UploadsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      AccessControl: Private
+      BucketName:
+        Fn::Join:
+          - "."
+          - - workshop-2018
+            - !Ref EnvironmentParameter
+            - uploads
+  UserUploadHandler:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: UserUpload
+      CodeUri: dist/UserUploadHandler
+      Handler: app/handlers/UserUploadHandler.fileUploaded
+      Environment: !Ref EnvironmentParameter
+      Runtime: nodejs6.10
+      Role: !GetAtt LambdaRole.Arn
+  UserUploadEventRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name:
+        Fn::Join:
+          - "."
+          - - UserUploadEventRule
+            - !Ref EnvironmentParameter
+      Description: Call UserUploadHandler.fileUploaded when an object is uploaded to the UploadsBucket.
+      EventPattern:
+        source:
+          - aws.s3
+        resources:
+          - !GetAtt UploadBucket.Arn
+Outputs:
+  UploadsBucketArn: !GetAtt UploadsBucket.Arn

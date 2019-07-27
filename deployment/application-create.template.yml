@@ -1,0 +1,22 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Application creation template
+Parameters:
+  EnvironmentParameter:
+    Type: string
+    Default: dev
+    Description: Environment name.
+Resources:
+  CodeBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      AccessControl: Private
+      BucketName:
+        Fn::Join:
+          - "."
+          - - workshop-2018
+            - !Ref EnvironmentParameter
+            - code
+Outputs:
+  CodeBucketArn:
+    Description: S3 bucket for uploading packaged Lambda function code.
+    Value: !GetAtt CodeBucket.Arn

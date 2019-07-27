@@ -1,0 +1,24 @@
+{
+  "name": "aws-workshop-2018",
+  "version": "1.0.0",
+  "description": "Materials for AWS workshop at Readify back to base, Q1 2018.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leftclickben/aws-workshop-2018.git"
+  },
+  "author": "Ben New <ben.new@readify.net>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/leftclickben/aws-workshop-2018/issues"
+  },
+  "homepage": "https://github.com/leftclickben/aws-workshop-2018#readme",
+  "devDependencies": {
+    "@types/aws-lambda": "0.0.35",
+    "aws-sdk": "^2.222.1",
+    "serverless-api-stage": "^1.3.0"
+  }
+}
